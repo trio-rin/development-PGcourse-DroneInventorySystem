@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,7 +25,6 @@ import com.digitalojt.web.entity.StockInfo;
 import com.digitalojt.web.form.StockInfoForm;
 import com.digitalojt.web.service.StockInfoService;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
@@ -50,26 +50,15 @@ public class StockListController extends AbstractController {
 	 * @return String(path)
 	 */
 	@GetMapping(UrlConsts.STOCK_LIST)
-	public String index(Model model, HttpSession session) {
+	public String index(Model model) {
 		
 		logStart(LogMessage.HTTP_GET);
 		
-		// カテゴリーリスト 取得
-		List<CategoryInfo> categoryList = service.getCategoryListData();
-		
-		// センターリスト 取得
-		List<CenterInfo> centerList = service.getCenterListData();
+		// カテゴリーリストとセンターリストを取得してセット
+		getCategoryAndCenterData(model);
 		
 		// 在庫一覧情報 全件取得
 		List<StockInfo> stockList = service.getStockInfoData();
-		
-		// カテゴリーリストをsessionにセット
-		session.setAttribute("categoryList", categoryList);
-		
-
-		// 在庫センターリストをsessionにセット
-		session.setAttribute("centerList", centerList);
-
 
 		// 画面表示用に在庫情報リストをセット
 		model.addAttribute(ModelAttributeContents.STOCK_LIST, stockList);
@@ -107,6 +96,9 @@ public class StockListController extends AbstractController {
 			return "redirect:" + UrlConsts.STOCK_LIST; 
 		}
 		
+		// カテゴリーリストとセンターリストを取得してセット
+		getCategoryAndCenterData(model);
+		
 		// 部品在庫一覧情報取得
 		List<StockInfo> stockList = service.getStockInfoData(form);
 		
@@ -129,7 +121,11 @@ public class StockListController extends AbstractController {
 
 		// 在庫情報リストをセット
 		model.addAttribute(ModelAttributeContents.STOCK_LIST, stockList);
-		
+	    redirectAttributes.addFlashAttribute(ModelAttributeContents.CATEGORY_LIST, service.getCategoryListData());
+	    redirectAttributes.addFlashAttribute(ModelAttributeContents.CENTER_LIST, service.getCenterListData());
+	    redirectAttributes.addFlashAttribute(ModelAttributeContents.STOCK_LIST, stockList);
+
+
 		logEnd(LogMessage.HTTP_GET);
 
 		return UrlConsts.STOCK_LIST_INDEX;
@@ -145,6 +141,9 @@ public class StockListController extends AbstractController {
 	public String register(Model model) {
 		
 		logStart(LogMessage.HTTP_GET);
+		
+		// カテゴリーリストとセンターリストを取得してセット
+		getCategoryAndCenterData(model);
 
 		// 新規登録用のフォームオブジェクトを作成
 		StockInfoForm form = new StockInfoForm();
@@ -183,8 +182,12 @@ public class StockListController extends AbstractController {
 			return "redirect:" + UrlConsts.STOCK_LIST_REGISTER; // 部品在庫一覧 登録画面にリダイレクト
 		}
 
-		// 部品在庫を登録
-		service.registerStockInfo(form);
+		try {
+			// 部品在庫を登録
+			service.registerStockInfo(form);
+		} catch (DataAccessException e) {
+			logError(LogMessage.ERROR_LOG, e);
+		}
 
 		// 登録成功メッセージをフラッシュスコープに設定
 		redirectAttributes.addFlashAttribute(ModelAttributeContents.SUCCESS_MSG, "success.register");
@@ -205,6 +208,9 @@ public class StockListController extends AbstractController {
 	public String update(@PathVariable int stockId, Model model) {
 		
 		logStart(LogMessage.HTTP_GET);
+		
+		// カテゴリーリストとセンターリストを取得してセット
+		getCategoryAndCenterData(model);
 
 		// 在庫IDから、部品カテゴリー情報取得
 		StockInfo stockInfo = service.getStockInfoData(stockId);
@@ -243,9 +249,13 @@ public class StockListController extends AbstractController {
 			// 部品在庫情報 更新/削除画面にリダイレクト
 			return "redirect:" + UrlConsts.STOCK_LIST_UPDATE + "/" + form.getStockId(); 
 		}
-
-		// 部品カテゴリー情報を登録
-		service.updateStockInfo(form);
+		
+		try {
+			// 部品在庫を更新
+			service.updateStockInfo(form);
+		} catch (DataAccessException e) {
+			logError(LogMessage.ERROR_LOG, e);
+		}
 
 		// 更新成功メッセージをフラッシュスコープに設定
 		redirectAttributes.addFlashAttribute(ModelAttributeContents.SUCCESS_MSG, "success.update");
@@ -275,5 +285,26 @@ public class StockListController extends AbstractController {
 		logValidationError(LogMessage.HTTP_POST, form + " " + errorMsg.toString());
 
 		return errorMsg.toString();
+	}
+	
+	/**
+	 * カテゴリーリストとセンターリストを取得してセット
+	 * 
+	 * @param model
+	 * @return
+	 */
+	private void getCategoryAndCenterData(Model model) {
+
+		// カテゴリーリスト 取得
+		List<CategoryInfo> categoryList = service.getCategoryListData();
+		
+		// センターリスト 取得
+		List<CenterInfo> centerList = service.getCenterListData();
+		
+		// 画面表示用にカテゴリーリストをセット
+		model.addAttribute(ModelAttributeContents.CATEGORY_LIST, categoryList);
+
+		// 画面表示用に在庫センターリストをセット
+		model.addAttribute(ModelAttributeContents.CENTER_LIST, centerList);
 	}
 }

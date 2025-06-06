@@ -2,8 +2,8 @@ package com.digitalojt.web.form;
 
 import com.digitalojt.web.validation.StockInfoFormValidator;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -44,8 +44,8 @@ public class StockInfoForm {
 	/**
 	 * 数量
 	 */
-    @DecimalMin(value = "0", message = "{stock.amount.invalid.length}")
-    @DecimalMax(value = "10000", message = "{stock.amount.invalid.length}")
+    @Min(value = 0, message = "{stock.amount.invalid.length}")
+    @Max(value = 10000, message = "{stock.amount.invalid.length}")
     @NotNull(message = "{stock.amount.required}", groups = RegisterValidation.class)
 	private Integer amount;
 	

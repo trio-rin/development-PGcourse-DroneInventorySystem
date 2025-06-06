@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/template :: layout(~{::title},~{::body/content()})}">
 
 <head>
-	<title>部品カテゴリー管理 登録画面</title>
+	<title>部品在庫一覧 登録画面</title>
 	<link rel="stylesheet" href="styles.css">
 </head>
 
@@ -19,7 +19,7 @@
 			</div>
 
 			<!-- 登録フォーム -->
-			<form id="updateForm" method="post" th:action="@{/admin/stockList/register}"
+			<form id="registerForm" method="post" th:action="@{/admin/stockList/register}"
 				th:object="${stockUpdateForm}">
 
 				<table class="table table-bordered">
@@ -35,10 +35,9 @@
 							<td>カテゴリー ＊</td>
 							<td>
 								<select name="categoryId" class="form-control mr-2">
-									 <option th:each="category, iterStat : ${session.categoryList}"
+									 <option th:each="category : ${categoryList}"
 									         th:value="${category.categoryId}"
-									         th:text="${category.categoryName}"
-									         th:selected="${iterStat.index == 0}">
+									         th:text="${category.categoryName}">
 									 </option>
 								</select>
 							</td>
@@ -55,10 +54,9 @@
 							<td>在庫センター ＊</td>
 							<td>
 								<select name="centerId" class="form-control mr-2">
-									 <option th:each="center, iterStat : ${session.centerList}"
+									 <option th:each="center : ${centerList}"
 									         th:value="${center.centerId}"
-									         th:text="${center.centerName}"
-									         th:selected="${iterStat.index == 0}">
+									         th:text="${center.centerName}">
 									 </option>
 								</select>
 							</td>

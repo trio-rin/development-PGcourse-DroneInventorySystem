@@ -22,7 +22,7 @@
 					<label for="searchTerm" class="mr-2">カテゴリー</label>
 					<select id="searchTerm" name="categoryId" class="form-control mr-2">
 						 <option value="">すべて</option>
-						 <option th:each="category : ${session.categoryList}"
+						 <option th:each="category : ${categoryList}"
 						         th:value="${category.categoryId}"
 						         th:text="${category.categoryName}">
 						 </option>
@@ -75,13 +75,13 @@
 							<tr th:each="item : ${stockList}">
 								<td>
 									<a th:href="@{/admin/stockList/update/{stockId}(stockId=${item.stockId})}" 
-									   th:text="${item.CategoryInfo.categoryName}"
+									   th:text="${item.categoryInfo.categoryName}"
 									   style="text-decoration: underline;">
 									</a>
 								</td>
 								<td> [[${item.name}]] </td>
 								<td> [[${item.amount}]] </td>
-								<td> [[${item.CenterInfo.centerName}]] </td>
+								<td> [[${item.centerInfo.centerName}]] </td>
 								<td> [[${item.description}]] </td>
 							</tr>
 						</tbody>

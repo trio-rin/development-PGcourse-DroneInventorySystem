@@ -11,7 +11,7 @@ import com.digitalojt.web.entity.StockInfo;
 
 /**
  * 
- * 部品カテゴリー情報テーブルリポジトリー
+ * 在庫情報テーブルリポジトリー
  *
  * @author lin
  * 
@@ -44,7 +44,7 @@ public interface StockInfoRepository extends JpaRepository<StockInfo, Integer> {
     @Query("SELECT s "
     		+ "FROM StockInfo s "
     		+ "WHERE (:categoryId IS NULL OR s.categoryInfo.categoryId = :categoryId) "
-    		+ "AND s.name LIKE %:name% "
+    		+ "AND (:name IS NULL OR s.name LIKE CONCAT('%', :name, '%')) "
     		+ "AND (:amount IS NULL "
     		+ "OR (:amountCondition = 'greater' AND s.amount >= :amount OR :amountCondition = 'less' "
     		+ "AND s.amount <= :amount)) "

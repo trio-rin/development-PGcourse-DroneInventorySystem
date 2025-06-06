@@ -40,7 +40,7 @@ public class StockInfo {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryInfo categoryInfo;
-	
+
 	/**
 	 * 名前
 	 */
@@ -84,4 +84,18 @@ public class StockInfo {
      */
     @Column(name = "update_date", nullable = false)
     private Timestamp updateDate;
+    
+    /**
+     * カテゴリーID Getterメソッド
+     */
+    public Integer getCategoryId() {
+        return  this.categoryInfo.getCategoryId();
+    }
+    
+    /**
+     * センターID Getterメソッド
+     */
+    public Integer getCenterId() {
+        return  this.centerInfo.getCenterId();
+    }
 }

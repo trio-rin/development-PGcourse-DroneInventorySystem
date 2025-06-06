@@ -45,4 +45,10 @@ public class ModelAttributeContents {
 	
 	// 在庫一覧画面 フォーム情報
 	public static final String STOCK_UPDATE_FORM = "stockUpdateForm";
+	
+	// 在庫一覧画面 カテゴリーリスト
+	public static final String CATEGORY_LIST = "categoryList";
+	
+	// 在庫一覧画面 在庫センターリスト
+	public static final String CENTER_LIST = "centerList";
 }

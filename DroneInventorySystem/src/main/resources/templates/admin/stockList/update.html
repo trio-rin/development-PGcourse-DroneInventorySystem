@@ -43,11 +43,10 @@
 						<tr>
 							<td>カテゴリー ＊</td>
 							<td>
-								<select name="categoryId" class="form-control mr-2">
-									 <option th:each="category, iterStat : ${session.categoryList}"
+								<select name="categoryId" class="form-control mr-2" th:field="*{categoryId}">
+									 <option th:each="category : ${categoryList}"
 									         th:value="${category.categoryId}"
-									         th:text="${category.categoryName}"
-									         th:selected="${category.categoryName == '${categoryName}'}">
+									         th:text="${category.categoryName}">
 									 </option>
 								</select>
 							</td>
@@ -64,12 +63,11 @@
 						<tr>
 							<td>在庫センター ＊</td>
 							<td>
-								<select name="centerId" class="form-control mr-2">
-									 <option th:each="center, iterStat : ${session.centerList}"
+								<select name="centerId" class="form-control mr-2" th:field="*{centerId}">
+									 <option th:each="center : ${centerList}"
 									         th:value="${center.centerId}"
-									         th:text="${center.centerName}"
-									         th:selected="${center.centerName == '${centerName}'}">
-									 </option>
+									         th:text="${center.centerName}">
+									 </option> 
 								</select>
 							</td>
 						</tr>

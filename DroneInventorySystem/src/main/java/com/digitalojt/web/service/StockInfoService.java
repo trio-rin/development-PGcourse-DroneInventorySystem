@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,13 +37,15 @@ import lombok.RequiredArgsConstructor;
 public class StockInfoService {
 	
 	/** 部品カテゴリー情報テーブル リポジトリー */
-	private final PartsCategoryRepository partsCategoryrepository;
+	@Autowired
+	private final PartsCategoryRepository partsCategoryRepository;
 	
 	/** センター情報テーブル リポジトリー */
-	private final CenterInfoRepository centerInforepository;
+	@Autowired
+	private final CenterInfoRepository centerInfoRepository;
 	
 	/** 在庫情報テーブル リポジトリー */
-	private final StockInfoRepository stockInforepository;
+	private final StockInfoRepository stockInfoRepository;
 
 
 	/** メッセージソース */
@@ -52,8 +56,9 @@ public class StockInfoService {
 	 * 
 	 * @return
 	 */
+	@Cacheable("categoryListCache")
 	public List<CategoryInfo> getCategoryListData() {
-		return partsCategoryrepository.findByDeleteFlagOrderByCategoryIdAsc(DeleteFlagConsts.ACTIVE);
+		return partsCategoryRepository.findByDeleteFlagOrderByCategoryIdAsc(DeleteFlagConsts.ACTIVE);
 	}
 
 	/**
@@ -62,8 +67,9 @@ public class StockInfoService {
 	 * @param categoryId
 	 * @return
 	 */
+	@Cacheable("centerListCache")
 	public List<CenterInfo> getCenterListData() {
-		return centerInforepository.findByDeleteFlagOrderByCenterIdAsc(DeleteFlagConsts.ACTIVE);
+		return centerInfoRepository.findByDeleteFlagOrderByCenterIdAsc(DeleteFlagConsts.ACTIVE);
 	}
 	
 	
@@ -73,7 +79,7 @@ public class StockInfoService {
 	 * @return
 	 */
 	public List<StockInfo> getStockInfoData() {
-		return stockInforepository.findByDeleteFlagOrderByStockIdAsc(DeleteFlagConsts.ACTIVE);
+		return stockInfoRepository.findByDeleteFlagOrderByStockIdAsc(DeleteFlagConsts.ACTIVE);
 	}
 	
 	/**
@@ -83,7 +89,7 @@ public class StockInfoService {
 	 * @return
 	 */
 	public StockInfo getStockInfoData(int stockId) {
-		return stockInforepository.findById(stockId).get();
+		return stockInfoRepository.findById(stockId).get();
 	}
 
 	/**
@@ -97,7 +103,7 @@ public class StockInfoService {
 	 */
 	public List<StockInfo> getStockInfoData(@Valid StockInfoForm form) {
 		
-		return stockInforepository.findStockList(
+		return stockInfoRepository.findStockList(
 				form.getCategoryId(), form.getName(), form.getAmount(), form.getAmountCondition(), DeleteFlagConsts.ACTIVE);
 	}
 
@@ -118,9 +124,9 @@ public class StockInfoService {
 
 		StockInfo registerEntity = new StockInfo();
 	    // カテゴリーID に対応するカテゴリー情報を取得
-		CategoryInfo newCategory =  partsCategoryrepository.findById(form.getCategoryId()).get();
+		CategoryInfo newCategory =  partsCategoryRepository.findById(form.getCategoryId()).get();
 	    // センターID に対応するセンター情報を取得
-		CenterInfo newCenter =  centerInforepository.findById(form.getCenterId()).get();
+		CenterInfo newCenter =  centerInfoRepository.findById(form.getCenterId()).get();
 
 		registerEntity.setCategoryInfo(newCategory);
 		registerEntity.setName(form.getName());
@@ -132,7 +138,7 @@ public class StockInfoService {
 		registerEntity.setCreateDate(currentTimestamp);
 		registerEntity.setUpdateDate(currentTimestamp);
 
-		stockInforepository.save(registerEntity);
+		stockInfoRepository.save(registerEntity);
 	}
 
 	/*
@@ -140,10 +146,11 @@ public class StockInfoService {
 	 * 
 	 * @param form
 	 */
+	@Transactional
 	public void updateStockInfo(@Valid StockInfoForm form) {
 
 		// 存在しない場合は例外をスロー
-		StockInfo entity = stockInforepository.findById(form.getStockId()).orElseThrow(() -> 
+		StockInfo entity = stockInfoRepository.findById(form.getStockId()).orElseThrow(() -> 
 					new EntityNotFoundException(messageSource.getMessage(
 							ErrorMessage.ININVALID_UPDATE_ERROR_MESSAGE
 							, null
@@ -157,9 +164,9 @@ public class StockInfoService {
 		} else {
 			// 更新の場合
 		    // カテゴリーID に対応するカテゴリー情報を取得
-			CategoryInfo newCategory =  partsCategoryrepository.findById(form.getCategoryId()).get();
+			CategoryInfo newCategory =  partsCategoryRepository.findById(form.getCategoryId()).get();
 		    // センターID に対応するセンター情報を取得
-			CenterInfo newCenter =  centerInforepository.findById(form.getCenterId()).get();
+			CenterInfo newCenter =  centerInfoRepository.findById(form.getCenterId()).get();
 			entity.setCategoryInfo(newCategory);
 			entity.setName(form.getName());
 			entity.setCenterInfo(newCenter);
@@ -170,6 +177,6 @@ public class StockInfoService {
 
 	    // 更新日付をセット
 	    entity.setUpdateDate(Timestamp.valueOf(LocalDateTime.now()));
-	    stockInforepository.save(entity);
+	    stockInfoRepository.save(entity);
 	}
 }
