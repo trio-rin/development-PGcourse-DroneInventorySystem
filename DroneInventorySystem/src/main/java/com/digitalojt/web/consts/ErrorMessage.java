@@ -37,4 +37,19 @@ public class ErrorMessage {
 	
 	// 操作履歴画面の操作時刻に関するエラーメッセージ
 	public static final String OPERATION_DATE_FIELD_ERROR_MESSAGE = "operationLog.operationDateField.empty";
+	
+	// 不正なデータ登録に関するエラーメッセージ
+	public static final String DATA_DUPLICATE_ERROR_MESSAGE = "data.duplicate";
+	
+	// 不正なデータ登録に関するエラーメッセージ
+	public static final String ININVALID_REGISTRATION_ERROR_MESSAGE = "invalid.registration";
+	
+	// 不正なデータ更新/削除に関するエラーメッセージ
+	public static final String ININVALID_UPDATE_ERROR_MESSAGE = "invalid.update";
+	
+	// 禁止文字チェック（{ } ; = $ & ）が含まれている場合のエラーメッセージキー
+	public static final String STOCK_NAME_FORBIDDEN_ERROR_MESSAGE = "stock.name.forbidden";
+	
+	// 数値範囲チェックのエラーメッセージキー
+	public static final String STOCK_AMOUNT_RANGE_ERROR_MESSAGE = "stock.amount.range";
 }
